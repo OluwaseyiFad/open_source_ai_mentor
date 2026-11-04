@@ -34,3 +34,14 @@ Finally, I, the human in the loop will review these datasets to see if they dese
 
 Limitation Note: The steps outlines above in sourcing these dataset are not in any way indicative of the most optimal approach in sourcing dataset in production pipelines, however this is an experimental project and I am tinkering with approaches to see where it lands. 
 
+
+
+## Building QLORA Adapter
+
+It is worth mentioning that most tasks do not require fine tuning, and can be easily solved with RAG or prompt engineering techniques hence fine-tuning should only be considered when it is the most efficable choice. 
+
+Model chosen: Qwen3-8B
+Why? It is chosen because it is small enough to train on a consumer GPU with LORA/QLORA, has long context, and also strong enough for small coding tasks which is an important capability needed for the problem task. However with enough time and resources, one would ideally compare different model family. 
+I am also fine-tuning from the instruct variant because it is easier to train, and because of limited datasets
+
+LORA is when instead of training all model parameters, we train a small set of added low-rank adapter weights (in 16-bit precision). QLORA is just a quantized version of that achieved through precision reduction to 4 bits trading small accuracy for huge memory optim typically by 75% (Unsloth's dynamic 4-bit quants have been known to recover this minimal accuracy loss).
