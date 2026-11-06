@@ -45,3 +45,5 @@ Why? It is chosen because it is small enough to train on a consumer GPU with LOR
 I am also fine-tuning from the instruct variant because it is easier to train, and because of limited datasets
 
 LORA is when instead of training all model parameters, we train a small set of added low-rank adapter weights (in 16-bit precision). QLORA is just a quantized version of that achieved through precision reduction to 4 bits trading small accuracy for huge memory optim typically by 75% (Unsloth's dynamic 4-bit quants have been known to recover this minimal accuracy loss).
+
+r (rank) - higher means more more capacity and target_modules (what layers are targeted) are the most important hyperparameter when doing a LoRA fine-tuning and must be tuned to see what perform best. I am gonna start with the recommended default r=16 and all-linear targeting.
