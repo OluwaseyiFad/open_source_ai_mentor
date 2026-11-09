@@ -59,3 +59,6 @@ It is worth mentioning that there are multiple ways a supervised fine-tuning can
 
 
 During training on my local device Mac, It could not use the dynamic 4-bit quant that was used in the training script because bitsandbytes does not support Apple Silicon hence it defaulted to MLX 4-bit quantization instead.
+
+
+Fine-tuning on a few hundreds data points is generally not recommended as it is prone to overfitting, however there are hyperparamters choices that could help reduce that possibility. For example, eval_stratgey and eval_steps matters because that determines how many validation points with which we choose the best checkpoint that gets loaded at the end. Learning rate is also important as we don't want it to be too low. Many other hyperparamters chosen in this code also matters, but the idea is they have to be intentionally set (or tuned) based on the what we are working with.
