@@ -1,8 +1,5 @@
-import torch
-
 from unsloth import FastModel
 from trl import SFTTrainer, SFTConfig
-from transformers import TrainingArguments
 from datasets import load_dataset
 
 
@@ -46,8 +43,8 @@ def load_sft_trainer(model, tokenizer, train_dataset, val_dataset, max_seq_len):
         lr_scheduler_type="cosine",
         warmup_ratio=0.05,
         # max_steps=60,  # smoke test
-        eval_strategy="steps", eval_steps=10,
-        save_strategy="steps", save_steps=10, save_total_limit=3,
+        eval_strategy="steps", eval_steps=25,
+        save_strategy="steps", save_steps=25, save_total_limit=3,
         load_best_model_at_end=True, metric_for_best_model="eval_loss",
         logging_steps=1,
         seed=3407,
@@ -77,11 +74,11 @@ if __name__ == "__main__":
         })
     train_dataset = dataset_dict["train"]
     val_dataset = dataset_dict["validation"]
-    print("train dataset: ", train_dataset[0])
-    print("val dataset: ", val_dataset[0])
+    # print("train dataset: ", train_dataset[0])
+    # print("val dataset: ", val_dataset[0])
 
-    trainer = load_sft_trainer(model, tokenizer, train_dataset.select(range(20)), val_dataset.select(range(5)), max_seq_len) # for smoke test
-    # trainer = load_sft_trainer(model, tokenizer, train_dataset, val_dataset, max_seq_len)  # for real run
+    # trainer = load_sft_trainer(model, tokenizer, train_dataset.select(range(20)), val_dataset.select(range(5)), max_seq_len) # for smoke test
+    trainer = load_sft_trainer(model, tokenizer, train_dataset, val_dataset, max_seq_len)  # for real run
     trainer_stats = trainer.train()
-    model.save_pretrained("outputs/final_checkpoint")  # Saves the best model
+    trainer.save_model("outputs/final_checkpoint")  # Saves the best model
     tokenizer.save_pretrained("outputs/final_checkpoint")

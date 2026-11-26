@@ -31,7 +31,7 @@ Per-issue criteria is yet to be decided but must be sound - Everything else down
 
 Finally, I, the human in the loop will review these datasets to see if they deserve my approval.
 
-The dataset is in a ChatML Format which is the format expected by the SFTTrainer used in this training.
+The dataset is in a ChatML Format which is the format expected by the SFTTrainer used in this training. Ensure the format is properly checked as malformed ChatML templates causes the model to train on garbage tokens
 
 
 Limitation Note: The steps outlines above in sourcing these dataset are not in any way indicative of the most optimal approach in sourcing dataset in production pipelines, however this is an experimental project and I am tinkering with approaches to see where it lands. 
@@ -61,4 +61,19 @@ It is worth mentioning that there are multiple ways a supervised fine-tuning can
 During training on my local device Mac, It could not use the dynamic 4-bit quant that was used in the training script because bitsandbytes does not support Apple Silicon hence it defaulted to MLX 4-bit quantization instead.
 
 
-Fine-tuning on a few hundreds data points is generally not recommended as it is prone to overfitting, however there are hyperparamters choices that could help reduce that possibility. For example, eval_stratgey and eval_steps matters because that determines how many validation points with which we choose the best checkpoint that gets loaded at the end. Learning rate is also important as we don't want it to be too low. Many other hyperparamters chosen in this code also matters, but the idea is they have to be intentionally set (or tuned) based on the what we are working with.
+Fine-tuning on a few hundreds data points is generally not recommended as it is prone to overfitting, however there are hyperparamters choices that could help reduce that possibility. For example, eval_stratgey and eval_steps matters because that determines how many validation points with which we choose the best checkpoint that gets loaded at the end. Learning rate is also important as we don't want it to be too low due to model not learning esp given limited datasets nor too high due to wild oscillations and swings in loss curve. Many other hyperparamters chosen in this code also matters, but the idea is they have to be intentionally set (or tuned) based on the what we are working with.
+
+
+
+### Things to watch out for 
+- Overfitting: when training loss improves while validation climbs
+- Catastophic forgetting: Model performing well on the narrow tasks but degraging on general tasks
+- Loss curve flatness or huge swings: Flatness in loss curve can arise due to too low LR, and huge swings can occur due to too high LR.
+- Cuda OOM errors (especially on consumer GPUs): tune hyperparameters to be more memory efficient based on the device limitation.
+
+
+## Evaluation
+
+Evaluation is just as important (if not more) than the training or fine-tuning itself. So it is very important to carefully choose the metrics that would be used in evaluation. 
+
+The metric to be choosen has to be evaluated itself (evaluate the evaluation), and the metric has to be task-specific. Different kind of metrics are suitable to different kind of tasks, for example F1 Score and exact accuracy is good for classification task, LLM-as-a-judge and human evaluation for generation task when optimizing for human preferences, and BLUE and ROGUE when not.
